@@ -273,11 +273,10 @@ def main():
                     st.markdown("## Resultados de Análisis")
                     st.markdown("---")
 
-                    html_block = ""
                     for i, pred in enumerate(results):
-                        html_block += render_prediction(pred, i)
+                        st.markdown(render_prediction(pred, i), unsafe_allow_html=True)
 
-                    st.markdown(html_block, unsafe_allow_html=True)
+                    
 
                     # Botón nueva clasificación
                     st.markdown("<br>", unsafe_allow_html=True)
