@@ -8,6 +8,7 @@ from tensorflow import keras
 from PIL import Image
 import io
 import time
+import streamlit.components.v1 as components
 
 # ------------------------------------------------------------------ Logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(message)s')
@@ -193,7 +194,7 @@ h1 {
 
 # ------------------------------------------------------------------ Render
 def render_prediction(prediction, rank_index):
-    """Genera el HTML para un item de predicción."""
+    """Retorna el HTML completo para un item de predicción."""
     pct = (prediction["probability"] * 100)
     rank_emoji = ["🥇", "🥈", "🥉"][rank_index]
     css_class = ["prediction-gold", "prediction-silver", "prediction-bronze"][rank_index]
@@ -202,20 +203,25 @@ def render_prediction(prediction, rank_index):
     if rank_index == 0 and prediction["probability"] > 0.7:
         confidence_badge = '<span class="confidence-badge">✅ Alta confianza</span>'
 
-    html = f"""
-    <div class="prediction-item {css_class}">
-        <span class="rank">{rank_emoji}</span>
-        <div class="breed-info">
-            <span class="breed-name">{prediction['breed']}</span>
+    return f'''
+    <div class="prediction-item {css_class}" style="display:flex; align-items:center; gap:1rem; 
+        background:#f8f9fa; border-radius:10px; padding:1rem; margin-bottom:.75rem; 
+        border-left:4px solid transparent;">
+        <span class="rank" style="font-size:1.5rem; min-width:40px; text-align:center;">{rank_emoji}</span>
+        <div class="breed-info" style="flex:1;">
+            <span class="breed-name" style="font-weight:600; color:#333;">{prediction['breed']}</span>
             {confidence_badge}
         </div>
-        <div class="probability-bar">
-            <div class="probability-fill" style="width:{pct:.1f}%"></div>
+        <div class="probability-bar" style="flex:1; height:12px; background:#e9ecef; 
+            border-radius:6px; overflow:hidden; min-width:120px;">
+            <div class="probability-fill" style="height:100%; border-radius:6px; 
+                background:linear-gradient(90deg, #667eea, #764ba2); 
+                width:{pct:.1f}%"></div>
         </div>
-        <span class="probability-text">{pct:.1f}%</span>
+        <span class="probability-text" style="min-width:60px; text-align:right; 
+            font-weight:700; color:#555;">{pct:.1f}%</span>
     </div>
-    """
-    return html
+    '''
 
 
 # ------------------------------------------------------------------ App
@@ -273,8 +279,28 @@ def main():
                     st.markdown("## Resultados de Análisis")
                     st.markdown("---")
 
+                    # Header de resultados
+                    st.markdown("## Resultados de Análisis")
+                    st.markdown("---")
+                    
+                    # Mostrar cada predicción con componentes.html
                     for i, pred in enumerate(results):
-                        st.markdown(render_prediction(pred, i), unsafe_allow_html=True)
+                        component_html = render_prediction(pred, i)
+                        components.html(f'''
+                            <!DOCTYPE html>
+                            <html>
+                            <head>
+                                <meta charset="utf-8">
+                                <style>
+                                    body {{ margin: 0; padding: 8px; }}
+                                    .prediction-gold {{ border-left:4px solid #ffc107 !important; }}
+                                    .prediction-silver {{ border-left:4px solid #c0c0c0 !important; }}
+                                    .prediction-bronze {{ border-left:4px solid #cd7f32 !important; }}
+                                </style>
+                            </head>
+                            <body>{component_html}</body>
+                            </html>
+                        ''', height=90, scrolling=False)
 
                     
 
