@@ -256,7 +256,7 @@ def main():
 
         # Mostrar imagen
         image = Image.open(uploaded_file)
-        st.image(image, caption="Vista previa", use_container_width=True)
+        st.image(image, caption="Vista previa", use_column_width=True)
 
         # Botón analizar
         if st.button("🔍 Analizar", use_container_width=True, type="primary"):
