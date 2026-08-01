@@ -278,10 +278,6 @@ def main():
                     # Mostrar resultados
                     st.markdown("## Resultados de Análisis")
                     st.markdown("---")
-
-                    # Header de resultados
-                    st.markdown("## Resultados de Análisis")
-                    st.markdown("---")
                     
                     # Mostrar cada predicción con componentes.html
                     for i, pred in enumerate(results):
